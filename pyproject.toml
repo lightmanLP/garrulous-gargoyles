@@ -1,8 +1,14 @@
 [tool.poetry]
-name = "Name"
-version = "0.1.0"
+name = "garrulous-gargoyles"
+version = "0.0.1"
 description = ""
-authors = ["Author 1 <email@mail.com>"]
+authors = [
+    "lightmanLP <liteman1000@gmail.com>",
+    "ificiana <name@mail.com>",
+    "LrnzDC3696 <name@mail.com>",
+    "pythonian23 <name@mail.com>",
+    "name <name@mail.com>"
+]
 license = "MIT"
 
 [tool.poetry.dependencies]
