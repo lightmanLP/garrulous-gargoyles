@@ -1,7 +1,7 @@
 import pygame
 
-from ..logging import log
 from .. import structures as struct
+from ..logging import log
 
 logger = log.getLogger("game")
 
