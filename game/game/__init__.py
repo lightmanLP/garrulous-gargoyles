@@ -1,5 +1,6 @@
-import pygame
 import logging
+
+import pygame
 
 from ..config import Color, screen
 
@@ -7,7 +8,6 @@ from ..config import Color, screen
 class Game:
     def __init__(self):
         logging.info("Initiating game")
-        pygame.game = self
         self.running = False
         self.screen = screen
         self.clock = pygame.time.Clock()

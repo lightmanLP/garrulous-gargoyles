@@ -1,10 +1,10 @@
-from typing import Final
+import itertools
+import logging as log
+import os
+import sys
 from datetime import datetime
 from pathlib import Path
-import logging as log
-import itertools
-import sys
-import os
+from typing import Final
 
 LOGS_PATH: Final[Path] = Path.cwd() / "logs"
 LOG_FILES_LIMIT: Final[int | dict[str, int] | None] = 10
