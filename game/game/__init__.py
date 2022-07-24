@@ -1,15 +1,19 @@
 import pygame
 
-import config
-from config import Color
+from .. import structures as struct
 
 
 class Game:
-    def __init__(self):
+    running: bool
+    screen: pygame.Surface
+    clock: pygame.time.Clock
+
+    def __init__(self) -> None:
         print("Initiating game")
-        pygame.game = self
+        pygame.init()
+
         self.running = False
-        self.screen = config.screen
+        self.screen = pygame.display.set_mode(struct.SCREEN_SIZE)
         self.clock = pygame.time.Clock()
 
     def main(self):
@@ -19,10 +23,10 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
-            self.screen.fill(Color.white)
+            self.screen.fill(struct.Color.WHITE)
 
             font = pygame.font.SysFont("None", 40)
-            text = font.render("Hello World!", True, Color.green)
+            text = font.render("Hello World!", True, struct.Color.GREEN)
             self.screen.blit(text, (300, 300))
             pygame.display.update()
             self.clock.tick(60)
