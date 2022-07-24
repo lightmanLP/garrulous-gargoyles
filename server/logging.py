@@ -1,3 +1,8 @@
+"""
+Setup logging for the server module
+"""
+# pylint: disable=no-member, unused-import
+
 from typing import Final
 from datetime import datetime
 from pathlib import Path
