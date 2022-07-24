@@ -7,3 +7,6 @@ lint-server:
 	pylint server
 
 lint: lint-game lint-server
+isort:
+	isort game
+	isort server
