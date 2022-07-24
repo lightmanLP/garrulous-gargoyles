@@ -1,19 +1,19 @@
 import pygame
+import logging
 
-import config
-from config import Color
+from ..config import Color, screen
 
 
 class Game:
     def __init__(self):
-        print("Initiating game")
+        logging.info("Initiating game")
         pygame.game = self
         self.running = False
-        self.screen = config.screen
+        self.screen = screen
         self.clock = pygame.time.Clock()
 
     def main(self):
-        print("Staring main game loop")
+        logging.info("Staring main game loop")
         self.running = True
         while self.running:
             for event in pygame.event.get():
@@ -27,4 +27,4 @@ class Game:
             pygame.display.update()
             self.clock.tick(60)
 
-        print("Terminating main game loop")
+        logging.info("Terminating main game loop")
