@@ -32,3 +32,4 @@ build/
 
 # Custom
 /_test.py
+/logs

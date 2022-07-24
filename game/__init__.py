@@ -1,8 +1,11 @@
 from .game import Game
+from .logging import log
+
+logger = log.getLogger("runner")
 
 
 def run():
-    print("Starting the game")
+    logger.info("Starting the game")
     game = Game()
     game.main()
-    print("Exiting the game")
+    logger.info("Exiting the game")
