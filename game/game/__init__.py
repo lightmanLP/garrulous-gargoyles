@@ -26,10 +26,10 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
-            self.screen.fill(struct.Color.WHITE)
+            self.screen.fill(pygame.Color(struct.Color.WHITE))
 
             font = pygame.font.SysFont("None", 40)
-            text = font.render("Hello World!", True, struct.Color.GREEN)
+            text = font.render("Hello World!", True, pygame.Color(struct.Color.GREEN))
             self.screen.blit(text, (300, 300))
             pygame.display.update()
             self.clock.tick(60)
