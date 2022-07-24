@@ -4,6 +4,6 @@ lint-game:
 
 lint-server:
 	flake8 server
-	flake8 server
+	pylint server
 
 lint: lint-game lint-server
