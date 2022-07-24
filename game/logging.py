@@ -1,11 +1,7 @@
-"""
-Setup logging for the game module
-"""
-# pylint: disable=no-member, unused-import
+"""Setup logging for the game module"""
 
 from typing import Final
 from datetime import datetime
-from functools import partial
 from pathlib import Path
 from types import TracebackType
 import itertools
@@ -14,18 +10,22 @@ import os
 import sys
 
 LOGS_PATH: Final[Path] = Path.cwd() / "logs"
-LOG_FILES_LIMIT: Final[int | dict[str, int] | None] = 10
+LOGS_HISTORY_LENGTH: Final[int] = 10
 INFO_OVERFLOW_LOGGERS: Final[tuple[str, ...]] = ()
 DEBUG_FILE: Final[bool] = True
 
 
 LOGS_PATH.mkdir(exist_ok=True)
-LOG_ORIGIN = "main"
 current_time = datetime.utcnow().strftime("%d.%m.%y_%H.%M.%S.%f")
-filename = f"{LOG_ORIGIN}_log_{current_time}.txt"
+filename = f"log_{current_time}.txt"
+log_files_count = LOGS_HISTORY_LENGTH  # pylint: disable=invalid-name
 
 stream_handler = log.StreamHandler(sys.stdout)
-main_handler = log.FileHandler(LOGS_PATH / filename, mode="a", encoding="UTF-8")
+main_handler = log.FileHandler(
+    LOGS_PATH / filename,
+    mode="a",
+    encoding="UTF-8"
+)
 handlers = [stream_handler, main_handler]
 
 stream_handler.setLevel(log.INFO)
@@ -38,6 +38,7 @@ log.basicConfig(
 )
 
 if DEBUG_FILE:
+    log_files_count *= 2
     debug_handler = log.FileHandler(
         LOGS_PATH / f"debug_{filename}",
         mode="a",
@@ -50,7 +51,7 @@ if DEBUG_FILE:
 def _handle_exception(
     exc_type: type[BaseException],
     exc_value: BaseException,
-    exc_traceback: "TracebackType",
+    exc_traceback: TracebackType
 ) -> None:
     if not issubclass(exc_type, KeyboardInterrupt):
         error_logger.exception(
@@ -72,32 +73,15 @@ def reset_loggers():
 def _cleanup_old_logs():
     log_files = sorted(
         itertools.chain(
-            LOGS_PATH.glob(f"{LOG_ORIGIN}_log_*.txt"),
-            LOGS_PATH.glob(f"debug_{LOG_ORIGIN}_log_*.txt"),
+            LOGS_PATH.glob("log_*.txt"),
+            LOGS_PATH.glob("debug_log_*.txt"),
         ),
-        key=partial(os.path.getctime),
+        key=os.path.getctime,
         reverse=True
     )
-    for i in log_files[get_count_limit():]:
+    for i in log_files[log_files_count:]:
         if i.is_file() and i.name != filename:
             i.unlink()
-
-
-def get_count_limit(origin: str | None = None) -> int:
-    """Get limit of logs count"""
-    if origin is None:
-        origin = LOG_ORIGIN
-
-    if LOG_FILES_LIMIT is None:
-        limit = 10
-    elif isinstance(LOG_FILES_LIMIT, int):
-        limit = LOG_FILES_LIMIT
-    else:
-        limit = LOG_FILES_LIMIT.get(origin, LOG_FILES_LIMIT.get("_", 10))
-
-    if DEBUG_FILE:
-        limit *= 2
-    return limit
 
 
 error_logger = log.getLogger("errors")
