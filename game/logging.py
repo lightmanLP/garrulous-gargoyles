@@ -14,9 +14,9 @@ DEBUG_FILE: Final[bool] = True
 
 
 LOGS_PATH.mkdir(exist_ok=True)
-log_origin = "main"
+LOG_ORIGIN = "main"
 current_time = datetime.utcnow().strftime("%d.%m.%y_%H.%M.%S.%f")
-filename = f"{log_origin}_log_{current_time}.txt"
+filename = f"{LOG_ORIGIN}_log_{current_time}.txt"
 
 stream_handler = log.StreamHandler(sys.stdout)
 main_handler = log.FileHandler(LOGS_PATH / filename, mode="a", encoding="UTF-8")
@@ -66,8 +66,8 @@ def reset_loggers():
 def _cleanup_old_logs():
     log_files = sorted(
         itertools.chain(
-            LOGS_PATH.glob(f"{log_origin}_log_*.txt"),
-            LOGS_PATH.glob(f"debug_{log_origin}_log_*.txt"),
+            LOGS_PATH.glob(f"{LOG_ORIGIN}_log_*.txt"),
+            LOGS_PATH.glob(f"debug_{LOG_ORIGIN}_log_*.txt"),
         ),
         key=lambda x: os.path.getctime(x),
         reverse=True
@@ -80,7 +80,7 @@ def _cleanup_old_logs():
 def get_count_limit(origin: str | None = None) -> int:
     """Get limit of logs count"""
     if origin is None:
-        origin = log_origin
+        origin = LOG_ORIGIN
 
     if LOG_FILES_LIMIT is None:
         limit = 10

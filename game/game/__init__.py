@@ -6,6 +6,7 @@ from ..logging import log
 logger = log.getLogger("game")
 
 
+# pylint: disable=no-member
 class Game:
     running: bool
     screen: pygame.Surface
