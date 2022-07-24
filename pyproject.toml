@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "garrulous-gargoyles"
+name = "game"
 version = "0.0.1"
 description = ""
 authors = [
@@ -13,13 +13,15 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "3.10.*"
+websockets = "~10.3"
+pygame = "~2.1.2"
 
 [tool.poetry.dev-dependencies]
 # Base tools
 flake8 = "~4.0.1"
 isort = "~5.10.1"
 pre-commit = "~2.17.0"
-black = "^22.6.0"
+black = "~22.6.0"
 
 # Flake8 plugins, see https://github.com/python-discord/code-jam-template/tree/main#plugin-list
 flake8-docstrings = "~1.6.0"
