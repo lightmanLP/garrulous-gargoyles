@@ -5,6 +5,7 @@ Setup logging for the game module
 
 from typing import Final
 from datetime import datetime
+from functools import partial
 from pathlib import Path
 from types import TracebackType
 import itertools
@@ -74,7 +75,7 @@ def _cleanup_old_logs():
             LOGS_PATH.glob(f"{LOG_ORIGIN}_log_*.txt"),
             LOGS_PATH.glob(f"debug_{LOG_ORIGIN}_log_*.txt"),
         ),
-        key=lambda x: os.path.getctime(x),
+        key=partial(os.path.getctime),
         reverse=True
     )
     for i in log_files[get_count_limit():]:
