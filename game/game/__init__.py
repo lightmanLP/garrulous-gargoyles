@@ -1,4 +1,5 @@
 import pygame
+import logging
 
 from .. import structures as struct
 
@@ -17,7 +18,7 @@ class Game:
         self.clock = pygame.time.Clock()
 
     def main(self):
-        print("Staring main game loop")
+        logging.info("Staring main game loop")
         self.running = True
         while self.running:
             for event in pygame.event.get():
@@ -31,4 +32,4 @@ class Game:
             pygame.display.update()
             self.clock.tick(60)
 
-        print("Terminating main game loop")
+        logging.info("Terminating main game loop")
