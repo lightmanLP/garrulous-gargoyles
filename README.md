@@ -1,7 +1,6 @@
 # garrulous-gargoyles
 
 ## TODO
-[ ] fix vertical
 
 ## Instructions on how to install
 
