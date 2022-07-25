@@ -10,3 +10,6 @@ lint: lint-game lint-server
 isort:
 	isort game
 	isort server
+black:
+	black game
+	black server
