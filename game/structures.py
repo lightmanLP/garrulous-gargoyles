@@ -1,9 +1,8 @@
 from typing import Literal
-from pathlib import Path
 from enum import IntEnum
+from pathlib import Path
 
 from .types import HasSides
-
 
 WIDTH, HEIGHT = SCREEN_SIZE = (1080, 720)
 CENTER = WIDTH//2, HEIGHT//2

@@ -5,7 +5,8 @@ import random
 
 import pygame
 
-from .. import structures as struct, utils
+from .. import structures as struct
+from .. import utils
 from .entity import Entity
 from .spritesheet import SpriteSheet
 
@@ -69,7 +70,11 @@ class Player(Entity, Moveable):
     sheet: SpriteSheet
     move_state: int
 
-    def __init__(self, size: tuple[int, int] = (50, 50), init: tuple[int, int] = (0, 0)) -> None:
+    def __init__(
+        self,
+        size: tuple[int, int] = (50, 50),
+        init: tuple[int, int] = (0, 0)
+    ) -> None:
         super().__init__(size=size)
 
         self.speed = 10
@@ -92,12 +97,9 @@ class Player(Entity, Moveable):
             self.size
         )
 
-    def change_state(self):
-        self.move_state = (self.move_state + 1) % (4 * self.speed)
-
     def move(self, direction: struct.Direction) -> "Self":
         self.image = self._get_sprite(self.move_state, direction.value)
-        self.change_state()
+        self.move_state = (self.move_state + 1) % (4 * self.speed)
         return self
 
 
