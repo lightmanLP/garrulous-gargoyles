@@ -1,12 +1,19 @@
+from os import PathLike
+
 import pygame
 
 
 class SpriteSheet:
-    def __init__(self, file):
-        self.sheet = pygame.image.load(file)
+    sheet: pygame.Surface
 
-    def image_at(self, rectangle):
-        rect = pygame.Rect(rectangle)
+    def __init__(self, path: PathLike) -> None:
+        self.sheet = pygame.image.load(path)
+
+    def image_at(
+        self,
+        rect: tuple[float, float, float, float] | pygame.Rect
+    ) -> pygame.Surface:
+        rect = pygame.Rect(rect)
         image = pygame.Surface(rect.size, pygame.SRCALPHA)
         image.blit(self.sheet, (0, 0), rect)
         return image

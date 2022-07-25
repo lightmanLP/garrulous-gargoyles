@@ -1,106 +1,109 @@
+from typing import TYPE_CHECKING, Any
+from abc import ABC
+from os import PathLike
 import random
 
 import pygame
 
-from ..structures import HEIGHT, WIDTH
-from ..utils import random_position
+from .. import structures as struct, utils
 from .entity import Entity
 from .spritesheet import SpriteSheet
 
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
-class Object(Entity):
-    def __init__(self, file, size=(50, 50), randomise_size=False):
-        super().__init__(file, size)
+
+class Moveable(ABC):
+    def move(self, direction: struct.Direction) -> Any:
+        ...
+
+
+class Object(Entity, Moveable):
+    randomise_size: bool
+    original_size: tuple[int, int]
+
+    def __init__(
+        self,
+        path: PathLike,
+        size: tuple[int, int] = (50, 50),
+        randomise_size: bool = False
+    ) -> None:
+        super().__init__(path, size)
         self.randomise_size = randomise_size
         self.original_size = size
         self._randomise_size()
 
     def _randomise_size(self):
         if self.randomise_size:
-            self.size = tuple(map(
-                lambda axis: (random.randrange(50, 100) * axis) // 100, self.original_size
-            ))
+            self.size = tuple(
+                (random.randrange(50, 100) * axis) // 100
+                for axis in self.original_size
+            )
         else:
             self.size = self.original_size
 
-    def move_down(self):
-        self.rect.y -= 5
-        if self.rect.top < 0:
+    def move(self, direction: struct.Direction) -> "Self":
+        shift = direction.sign * struct.OBJECT_STEP
+        match direction:
+            case struct.Direction.UP | struct.Direction.DOWN:
+                self.rect.y += shift
+            case struct.Direction.LEFT | struct.Direction.RIGHT:
+                self.rect.x += shift
+
+        if not direction.opposite.is_in_rect(struct.SCREEN_RECT, self.rect):
             self._randomise_size()
-            self.rect.center = (random_position()[0], HEIGHT)
+            fixed_coord = struct.SCREEN_RECT[direction]
+            if direction.pos_i == 0:
+                self.rect.center = utils.random_position(x=fixed_coord)
+            else:
+                self.rect.center = utils.random_position(y=fixed_coord)
+        return self
 
-    def move_up(self):
-        self.rect.y += 5
-        if self.rect.bottom > HEIGHT:
-            self._randomise_size()
-            self.rect.center = (random_position()[0], 0)
-
-    def move_right(self):
-        self.rect.x -= 5
-        if self.rect.left < 0:
-            self._randomise_size()
-            self.rect.center = (WIDTH, random_position()[0])
-
-    def move_left(self):
-        self.rect.x += 5
-        if self.rect.right > WIDTH:
-            self._randomise_size()
-            self.rect.center = (0, random_position()[1])
+    def random_spawn(self) -> "Self":
+        return self.spawn(utils.random_position())
 
 
-class Player(Entity):
-    def __init__(self, size=(50, 50), init=(0, 0)):
+class Player(Entity, Moveable):
+    speed: int
+    sprite_size: tuple[int, int]
+    sheet: SpriteSheet
+    move_state: int
+
+    def __init__(self, size: tuple[int, int] = (50, 50), init: tuple[int, int] = (0, 0)) -> None:
         super().__init__(size=size)
+
         self.speed = 10
         self.sprite_size = (16, 16)
-        self.sheet = SpriteSheet("game/resources/images/sprites/player/moves_b.png")
-        self.image = self._get_sprite(*init)
-        self.rect = self.image.get_rect()
+        self.sheet = SpriteSheet(struct.SPRITES_PATH / "player" / "moves_b.png")
         self.move_state = 0
 
-    def _get_sprite(self, *position):
+        self.image = self._get_sprite(*init)
+        self.rect = self.image.get_rect()
+
+    def _get_sprite(self, *position: tuple[int, int]):
         return pygame.transform.scale(
-            self.sheet.image_at((
-                (position[0] // self.speed) * 16, position[1] * 16,
-                *self.sprite_size)), self.size)
+            self.sheet.image_at(
+                (
+                    (position[0] // self.speed) * 16,
+                    position[1] * 16,
+                    *self.sprite_size
+                )
+            ),
+            self.size
+        )
 
     def change_state(self):
         self.move_state = (self.move_state + 1) % (4 * self.speed)
 
-    def move_up(self):
-        self.image = self._get_sprite(self.move_state, 1)
+    def move(self, direction: struct.Direction) -> "Self":
+        self.image = self._get_sprite(self.move_state, direction.value)
         self.change_state()
-
-    def move_down(self):
-        self.image = self._get_sprite(self.move_state, 0)
-        self.change_state()
-
-    def move_left(self):
-        self.image = self._get_sprite(self.move_state, 3)
-        self.change_state()
-
-    def move_right(self):
-        self.image = self._get_sprite(self.move_state, 2)
-        self.change_state()
+        return self
 
 
-class Group(pygame.sprite.LayeredUpdates):
-    def __init__(self):
-        super().__init__()
-        print(self.layers())
-
-    def move_up(self):
+class Group(pygame.sprite.LayeredUpdates, Moveable):
+    def move(self, direction: struct.Direction) -> "Self":
         for sprite in self.sprites():
-            sprite.move_up()
-
-    def move_down(self):
-        for sprite in self.sprites():
-            sprite.move_down()
-
-    def move_left(self):
-        for sprite in self.sprites():
-            sprite.move_left()
-
-    def move_right(self):
-        for sprite in self.sprites():
-            sprite.move_right()
+            if isinstance(sprite, Moveable):
+                sprite.move(direction)
+        return self

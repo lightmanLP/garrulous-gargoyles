@@ -1,30 +1,56 @@
-from pygame.constants import *
+from pygame import constants as pgconst
 import pygame
 
-from .. import structures as struct
+from .. import structures as struct, utils
 from ..entities import Group, Object, Player
 from ..logging import log
-from ..utils import random_position
 
 logger = log.getLogger("game")
 
 
 class Grass(Object):
-    def __init__(self, *args, **kwargs):
-        super().__init__("game/resources/images/sprites/grass/grass.png", *args, **kwargs)
-        self.level = -20
+    def __init__(
+        self,
+        randomise_size: bool = True,
+        level: int = -20,
+        **kwargs
+    ) -> None:
+        super().__init__(
+            struct.SPRITES_PATH / "grass" / "grass.png",
+            randomise_size=randomise_size,
+            **kwargs
+        )
+        self.level = level
 
 
 class Stone(Object):
-    def __init__(self, *args, **kwargs):
-        super().__init__("game/resources/images/sprites/stone/stone.png", *args, **kwargs)
-        self.level = -20
+    def __init__(
+        self,
+        randomise_size: bool = True,
+        level: int = -20,
+        **kwargs
+    ) -> None:
+        super().__init__(
+            struct.SPRITES_PATH / "stone" / "stone.png",
+            randomise_size=randomise_size,
+            **kwargs
+        )
+        self.level = level
 
 
 class Tree(Object):
-    def __init__(self, *args, **kwargs):
-        super().__init__("game/resources/images/sprites/trees/tree.png", *args, **kwargs)
-        self.level = 20
+    def __init__(
+        self,
+        size: tuple[int, int] = (150, 150),
+        level: int = 20,
+        **kwargs
+    ) -> None:
+        super().__init__(
+            struct.SPRITES_PATH / "trees" / "tree.png",
+            size=size,
+            **kwargs
+        )
+        self.level = level
 
 
 # pylint: disable=no-member
@@ -39,32 +65,32 @@ class Game:
         pygame.init()
 
         self.running = False
-        self.screen_size = struct.SCREEN_SIZE
-        self.screen = pygame.display.set_mode(self.screen_size)
+        self.screen = pygame.display.set_mode(struct.SCREEN_SIZE)
         self.clock = pygame.time.Clock()
         self.sprites = Group()
+
         self.generate_background()
         self.sprites.add(Player().spawn(struct.CENTER))
 
     def generate_background(self):
-        # generate 20 grass objects, 20 stones, 10 trees
-        grass = [Grass(randomise_size=True).spawn(random_position()) for _ in range(20)]
-        stones = [Stone(randomise_size=True).spawn(random_position()) for _ in range(20)]
-        trees = [Tree(size=(150, 150)).spawn(random_position()) for _ in range(10)]
-        self.sprites.add(*grass, *stones, *trees)
+        self.sprites.add(
+            *(Grass().random_spawn() for _ in range(20)),
+            *(Stone().random_spawn() for _ in range(20)),
+            *(Tree().random_spawn() for _ in range(10)),
+        )
 
     def keys(self):
         key = pygame.key.get_pressed()
-        if key[K_ESCAPE]:
+        if key[pgconst.K_ESCAPE]:
             self.running = False
-        elif key[K_DOWN]:
-            self.sprites.move_down()
-        elif key[K_UP]:
-            self.sprites.move_up()
-        elif key[K_LEFT]:
-            self.sprites.move_left()
-        elif key[K_RIGHT]:
-            self.sprites.move_right()
+        elif key[pgconst.K_DOWN]:
+            self.sprites.move(struct.Direction.DOWN)
+        elif key[pgconst.K_UP]:
+            self.sprites.move(struct.Direction.UP)
+        elif key[pgconst.K_LEFT]:
+            self.sprites.move(struct.Direction.LEFT)
+        elif key[pgconst.K_RIGHT]:
+            self.sprites.move(struct.Direction.RIGHT)
 
     def main(self):
         logger.info("Staring main game loop")
@@ -73,18 +99,18 @@ class Game:
         hold = True
         while self.running:
             for e in pygame.event.get():
-                if e.type == QUIT:
+                if e.type == pgconst.QUIT:
                     self.running = False
-                if e.type == KEYDOWN:
+                if e.type == pgconst.KEYDOWN:
                     key_flag = True
                     if not hold:
                         self.keys()
-                if e.type == KEYUP:
+                if e.type == pgconst.KEYUP:
                     key_flag = False
             if key_flag and hold:
                 self.keys()
 
-            self.screen.fill(struct.Color.BACKGROUND)
+            self.screen.fill(struct.Color.EMERALD)
 
             self.sprites.draw(self.screen)
 
