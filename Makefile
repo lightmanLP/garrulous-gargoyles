@@ -1,15 +1,15 @@
-lint-game:
-	flake8 game
-	pylint game
+lint-client:
+	flake8 client
+	pylint client
 
 lint-server:
 	flake8 server
 	pylint server
 
-lint: lint-game lint-server
+lint: lint-client lint-server
 isort:
-	isort game
+	isort client
 	isort server
 black:
-	black game
+	black client
 	black server
