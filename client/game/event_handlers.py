@@ -3,7 +3,7 @@ import pygame
 from .. import structures as struct
 from ..event_manager import event_manager
 from ..entities import Entity, Blocking, Collectible, Attackable
-from ..game import Game
+from .game import Game
 
 MOVEMENT_BINDS: dict[int, struct.Direction] = {
     pygame.K_UP: struct.Direction.UP,
@@ -50,11 +50,13 @@ def collide(obj: Entity, temp: Entity) -> bool:
     temp.rect = obj.rect.copy()
     if pygame.sprite.collide_mask(temp, player):
         print("Collide!", obj, player)
+    else:
+        return True
 
     if isinstance(obj, Collectible):
         obj.collect(player)
         # debug
-        print(player.inventory)
+        # print(player.inventory)
 
     if isinstance(obj, Attackable):
         # event_manager.emit("attack")

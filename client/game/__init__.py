@@ -2,7 +2,7 @@ from ..event_manager import event_manager
 from .. import structures as struct
 from ..entities import Object
 from .game import Game
-from . import event_handlers
+from . import event_handlers  # noqa: F401
 
 import pygame
 
