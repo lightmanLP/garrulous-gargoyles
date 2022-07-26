@@ -1,26 +1,29 @@
 import websockets
 import asyncio
 
-PORT = 8765
 
-print("Server listening on port", PORT)
+class Server:
+    def __init__(self, address, port):
+        self.address = address
+        self.port = port
+
+    def start(self):
+        print("Server listening on port", self.port)
+        websockets.serve(self.handle_websocket, self.address, self.port)
+        asyncio.run(self.serve())
+        print("Server closed")
+
+    async def serve(self):
+        server = await websockets.serve(self.handle_websocket, self.address, self.port)
+        await server.wait_closed()
+
+    async def handle_websocket(self, websocket, path):
+        print("A client connected!")
+
+        async for message in websocket:
+            print("Received:", message)
+            await websocket.send("Pong: " + message)
 
 
-async def echo(websocket, path):
-    """It echos."""
-    print("A client connected!")
-
-    async for message in websocket:
-        print("Received:", message)
-        await websocket.send("Pong: " + message)
-
-
-async def serve():
-    """It serves."""
-    server = await websockets.serve(echo, 'localhost', 8765)
-    await server.wait_closed()
-
-
-websockets.serve(echo, "localhost", PORT)
-asyncio.run(serve())
-print("Server closed")
+server = Server("localhost", 8765)
+server.start()
