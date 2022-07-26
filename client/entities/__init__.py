@@ -14,12 +14,12 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 
-class Moveable(ABC):
+class Movable(ABC):
     def move(self, direction: struct.Direction) -> Any:
         ...
 
 
-class Object(Entity, Moveable):
+class Object(Entity, Movable):
     randomise_size: bool
     original_size: tuple[int, int]
 
@@ -37,8 +37,7 @@ class Object(Entity, Moveable):
     def _randomise_size(self):
         if self.randomise_size:
             self.size = tuple(
-                (random.randrange(50, 100) * axis) // 100
-                for axis in self.original_size
+                (random.randrange(50, 100) * axis) // 100 for axis in self.original_size
             )
         else:
             self.size = self.original_size
@@ -64,7 +63,7 @@ class Object(Entity, Moveable):
         return self.spawn(utils.random_position())
 
 
-class Player(Entity, Moveable):
+class Player(Entity, Movable):
     speed: int
     sprite_size: tuple[int, int]
     sheet: SpriteSheet
@@ -82,10 +81,10 @@ class Player(Entity, Moveable):
         self.sheet = SpriteSheet(struct.SPRITES_PATH / "player" / "moves_b.png")
         self.move_state = 0
 
-        self.image = self._get_sprite(*init)
+        self.image = self._get_sprite(init)
         self.rect = self.image.get_rect()
 
-    def _get_sprite(self, *position: tuple[int, int]):
+    def _get_sprite(self, position: tuple[int, int]) -> pygame.Surface:
         return pygame.transform.scale(
             self.sheet.image_at(
                 (
@@ -98,14 +97,14 @@ class Player(Entity, Moveable):
         )
 
     def move(self, direction: struct.Direction) -> "Self":
-        self.image = self._get_sprite(self.move_state, direction.value)
+        self.image = self._get_sprite((self.move_state, direction.value))
         self.move_state = (self.move_state + 1) % (4 * self.speed)
         return self
 
 
-class Group(pygame.sprite.LayeredUpdates, Moveable):
+class Group(pygame.sprite.LayeredUpdates, Movable):
     def move(self, direction: struct.Direction) -> "Self":
         for sprite in self.sprites():
-            if isinstance(sprite, Moveable):
+            if isinstance(sprite, Movable):
                 sprite.move(direction)
         return self
