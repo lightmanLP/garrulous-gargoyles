@@ -1,11 +1,11 @@
-from typing import Literal
+from typing import Literal, SupportsInt
 from enum import IntEnum
 from pathlib import Path
 
 from .types import HasSides
 
 WIDTH, HEIGHT = SCREEN_SIZE = (1080, 720)
-CENTER = WIDTH//2, HEIGHT//2
+CENTER = WIDTH // 2, HEIGHT // 2
 SCREEN_RECT = (0, 0, *SCREEN_SIZE)
 
 OBJECT_STEP = 5
@@ -54,15 +54,11 @@ class Direction(IntEnum):
         return self.value < 2
 
     @property
-    def pos_i(self) -> Literal[0, 1]:
+    def pos_i(self) -> SupportsInt[Literal[0, 1]]:
         """Position index for (x, y) sequences"""
         return self.value & 1
 
-    def is_in_rect(
-        self,
-        rect: tuple[int, int, int, int],
-        contains: HasSides
-    ) -> bool:
+    def is_in_rect(self, rect: tuple[int, int, int, int], contains: HasSides) -> bool:
         """Checks if object still in some rect after move in this direction"""
         side = getattr(contains, self.opposite.side)
         if self.opposite.is_pos_definer:
@@ -75,16 +71,16 @@ DIRECTIONS_SIGN: dict[Direction, int] = {
     Direction.UP: 1,
     Direction.DOWN: -1,
     Direction.LEFT: 1,
-    Direction.RIGHT: -1
+    Direction.RIGHT: -1,
 }
 SIDE_NAMES: dict[Direction, str] = {
     Direction.UP: "top",
     Direction.DOWN: "bottom",
     Direction.LEFT: "left",
-    Direction.RIGHT: "right"
+    Direction.RIGHT: "right",
 }
 opposite_directions: dict[Direction, Direction] = {
     Direction.UP: Direction.DOWN,
-    Direction.LEFT: Direction.RIGHT
+    Direction.LEFT: Direction.RIGHT,
 }
 opposite_directions.update({v: k for k, v in opposite_directions.items()})

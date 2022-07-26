@@ -27,7 +27,7 @@ class Object(Entity, Moveable):
         self,
         path: PathLike,
         size: tuple[int, int] = (50, 50),
-        randomise_size: bool = False
+        randomise_size: bool = False,
     ) -> None:
         super().__init__(path, size)
         self.randomise_size = randomise_size
@@ -94,7 +94,7 @@ class Player(Entity, Moveable):
                     *self.sprite_size
                 )
             ),
-            self.size
+            self.size,
         )
 
     def move(self, direction: struct.Direction) -> "Self":

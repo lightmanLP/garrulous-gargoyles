@@ -18,6 +18,7 @@ class EventManager(Generic[KeyT]):
         def decorator(func: CallableT) -> CallableT:
             self.add_handler(name, func, with_name)
             return func
+
         return decorator
 
     def emit(self, name: KeyT, *args, **kwargs) -> tuple[Any, ...]:
