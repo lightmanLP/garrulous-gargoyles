@@ -54,7 +54,7 @@ class Direction(IntEnum):
         return self.value < 2
 
     @property
-    def pos_i(self) -> SupportsInt[Literal[0, 1]]:
+    def pos_i(self) -> Literal[0, 1]:
         """Position index for (x, y) sequences"""
         return self.value & 1
 
