@@ -1,4 +1,3 @@
-from typing import overload
 from os import PathLike
 
 import pygame
@@ -11,10 +10,6 @@ class SpriteSheet:
 
     def __init__(self, path: PathLike) -> None:
         self.sheet = pygame.image.load(path)
-
-    @overload
-    def image_at(self, rect: tuple[int, int, tuple[int, int]] | pygame.Rect) -> pygame.Surface:
-        ...
 
     def image_at(self, rect: tuple[int, int, int, int] | pygame.Rect) -> pygame.Surface:
         """Get sprite image at the specified frame (a rectangle)"""
