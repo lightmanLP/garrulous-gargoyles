@@ -3,6 +3,8 @@ from ..entities import Object
 
 
 class Grass(Object):
+    """Grass object, can be stepped on!"""
+
     def __init__(self, randomise_size: bool = True, layer: int = -20, **kwargs) -> None:
         super().__init__(
             struct.SPRITES_PATH / "grass" / "grass.png",
@@ -13,6 +15,8 @@ class Grass(Object):
 
 
 class Stone(Object):
+    """Stone object, can be stood upon!"""
+
     def __init__(self, randomise_size: bool = True, layer: int = -20, **kwargs) -> None:
         super().__init__(
             struct.SPRITES_PATH / "stone" / "stone.png",
@@ -23,6 +27,8 @@ class Stone(Object):
 
 
 class Tree(Object):
+    """Tree object, tall trees can hide you!"""
+
     def __init__(
         self, size: tuple[int, int] = (150, 150), layer: int = 20, **kwargs
     ) -> None:

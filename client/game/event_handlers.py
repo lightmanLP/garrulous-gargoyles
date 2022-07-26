@@ -23,11 +23,13 @@ MOVEMENT_BINDS: dict[int, struct.Direction] = {
 
 @event_manager.on(pygame.QUIT)
 def quit(game: "Game", e: "pygame.event.Event | None" = None):
+    """Quits the game on pygame.QUIT"""
     game.quit()
 
 
 @event_manager.on(pygame.KEYDOWN)
 def per_press_binds(game: "Game", e: pygame.event.Event):
+    """TODO:"""
     key: int = e.key
     match key:
         case pygame.K_ESCAPE:
@@ -36,6 +38,7 @@ def per_press_binds(game: "Game", e: pygame.event.Event):
 
 @event_manager.on("tick")
 def passive_binds(game: "Game"):
+    """TODO:"""
     pressed = pygame.key.get_pressed()
     for key, direction in MOVEMENT_BINDS.items():
         if not pressed[key]:

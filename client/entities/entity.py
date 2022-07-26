@@ -8,6 +8,8 @@ if TYPE_CHECKING:
 
 
 class Entity(pygame.sprite.DirtySprite):
+    """An Entity in the game"""
+
     image: pygame.Surface
     rect: pygame.Rect
 
@@ -26,5 +28,6 @@ class Entity(pygame.sprite.DirtySprite):
             self.rect = self.image.get_rect()
 
     def spawn(self, pos: tuple[int, int]) -> "Self":
+        """Spawns the entity at the given coordinates"""
         self.rect.center = pos
         return self
