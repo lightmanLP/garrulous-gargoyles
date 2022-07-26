@@ -29,7 +29,7 @@ def quit(game: "Game", e: "pygame.event.Event | None" = None):
 
 @event_manager.on(pygame.KEYDOWN)
 def per_press_binds(game: "Game", e: pygame.event.Event):
-    """TODO:"""
+    """Binds that are activated at the moment of pressing"""
     key: int = e.key
     match key:
         case pygame.K_ESCAPE:
@@ -38,7 +38,7 @@ def per_press_binds(game: "Game", e: pygame.event.Event):
 
 @event_manager.on("tick")
 def passive_binds(game: "Game"):
-    """TODO:"""
+    """Binds that remain active all the time you hold button"""
     pressed = pygame.key.get_pressed()
     for key, direction in MOVEMENT_BINDS.items():
         if not pressed[key]:

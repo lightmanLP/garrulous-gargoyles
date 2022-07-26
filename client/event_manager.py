@@ -21,7 +21,7 @@ class EventManager(Generic[KeyT]):
         self.handlers[name].append((func, with_name))
 
     def on(self, name: KeyT, with_name: bool = False) -> Callable[[CallableT], CallableT]:
-        """Defines a wrapper for event handlers"""
+        """Defines a wrapper for event handlers"""  # not actually wrapper
         def decorator(func: CallableT) -> CallableT:
             self.add_handler(name, func, with_name)
             return func

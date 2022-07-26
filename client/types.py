@@ -2,7 +2,7 @@ from typing import Protocol
 
 
 class HasSides(Protocol):
-    """TODO:"""
+    """Proto of object that has sides attributes"""
 
     top: int
     bottom: int

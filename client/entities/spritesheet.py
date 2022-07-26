@@ -13,9 +13,7 @@ class SpriteSheet:
         self.sheet = pygame.image.load(path)
 
     @overload
-    def image_at(
-        self, rect: tuple[int, int, tuple[int, int]] | pygame.Rect
-    ) -> pygame.Surface:
+    def image_at(self, rect: tuple[int, int, tuple[int, int]] | pygame.Rect) -> pygame.Surface:
         ...
 
     def image_at(self, rect: tuple[int, int, int, int] | pygame.Rect) -> pygame.Surface:

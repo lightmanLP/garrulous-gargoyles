@@ -79,16 +79,16 @@ DIRECTIONS_SIGN: dict[Direction, int] = {
     Direction.UP: 1,
     Direction.DOWN: -1,
     Direction.LEFT: 1,
-    Direction.RIGHT: -1,
+    Direction.RIGHT: -1
 }
 SIDE_NAMES: dict[Direction, str] = {
     Direction.UP: "top",
     Direction.DOWN: "bottom",
     Direction.LEFT: "left",
-    Direction.RIGHT: "right",
+    Direction.RIGHT: "right"
 }
 opposite_directions: dict[Direction, Direction] = {
     Direction.UP: Direction.DOWN,
-    Direction.LEFT: Direction.RIGHT,
+    Direction.LEFT: Direction.RIGHT
 }
 opposite_directions.update({v: k for k, v in opposite_directions.items()})

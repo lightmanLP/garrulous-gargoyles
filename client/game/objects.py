@@ -29,10 +29,10 @@ class Stone(Object):
 class Tree(Object):
     """Tree object, tall trees can hide you!"""
 
-    def __init__(
-        self, size: tuple[int, int] = (150, 150), layer: int = 20, **kwargs
-    ) -> None:
+    def __init__(self, size: tuple[int, int] = (150, 150), layer: int = 20, **kwargs) -> None:
         super().__init__(
-            struct.SPRITES_PATH / "trees" / "tree.png", size=size, **kwargs
+            struct.SPRITES_PATH / "trees" / "tree.png",
+            size=size,
+            **kwargs
         )
         self._layer = layer

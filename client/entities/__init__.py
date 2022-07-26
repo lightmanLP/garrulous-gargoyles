@@ -99,7 +99,7 @@ class Player(Entity, Movable):
                 (
                     (position[0] // self.speed) * 16,
                     position[1] * 16,
-                    *self.sprite_size
+                    self.sprite_size
                 )
             ),
             self.size,
