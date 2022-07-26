@@ -22,9 +22,6 @@ class Movable(ABC):
         """Move the entity in the given direction"""
 
 
-class Object(Entity, Movable):
-    """Objects on the game window other than the player and UI components"""
-
 class NonInteractive(ABC):
     type = struct.ObjectType.non_interactive
 
@@ -49,7 +46,9 @@ class Attackable(ABC):
         self.health -= damage
 
 
-class Object(Entity, Moveable):
+class Object(Entity, Movable):
+    """Objects on the game window other than the player and UI components"""
+
     randomise_size: bool
     original_size: tuple[int, int]
     type: struct.ObjectType
@@ -113,11 +112,10 @@ class Object(Entity, Moveable):
                 x += shift
         return x, y
 
-class Player(Entity, Movable):
+
+class Player(Entity, Movable, Attackable):
     """Player object"""
 
-
-class Player(Entity, Moveable, Attackable):
     speed: int
     sprite_size: tuple[int, int]
     sheet: SpriteSheet
@@ -158,7 +156,6 @@ class Player(Entity, Moveable, Attackable):
     def move(self, direction: struct.Direction) -> "Self":
         """Move the player in the given direction"""
         self.image = self._get_sprite((self.move_state, direction.value))
-        self.image = self._get_sprite(self.move_state, direction.value)
         self._generate_mask()
         self.move_state = (self.move_state + 1) % (4 * self.speed)
         return self

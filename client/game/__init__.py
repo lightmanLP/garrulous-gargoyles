@@ -72,7 +72,7 @@ def draw(game: Game):
     if mask:
         for sprite in game.sprites:
             sprite: Object
-            print(sprite.mask)
+            # print(sprite.mask)
             olist = sprite.mask.outline()
             # print(olist)
             pygame.draw.polygon(game.screen, struct.Color.BLACK, olist, 0)
