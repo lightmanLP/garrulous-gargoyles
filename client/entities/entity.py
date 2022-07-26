@@ -12,6 +12,7 @@ class Entity(pygame.sprite.DirtySprite):
 
     image: pygame.Surface
     rect: pygame.Rect
+    mask: pygame.mask.Mask
 
     def __init__(
         self,
@@ -26,8 +27,12 @@ class Entity(pygame.sprite.DirtySprite):
                 self.size
             )
             self.rect = self.image.get_rect()
+            self._generate_mask()
 
     def spawn(self, pos: tuple[int, int]) -> "Self":
         """Spawns the entity at the given coordinates"""
         self.rect.center = pos
         return self
+
+    def _generate_mask(self):
+        self.mask = pygame.mask.from_surface(self.image)
