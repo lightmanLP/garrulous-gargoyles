@@ -7,12 +7,13 @@ import pygame
 
 from .. import structures as struct
 from .. import utils
-from .entity import Entity
+from .entity import Entity, Blocking, Collectible, Attackable
 from .spritesheet import SpriteSheet
 from ..event_manager import event_manager
 
 if TYPE_CHECKING:
     from typing_extensions import Self
+# TODO: add __all__
 
 
 class Movable(ABC):
@@ -22,42 +23,17 @@ class Movable(ABC):
         """Move the entity in the given direction"""
 
 
-class NonInteractive(ABC):
-    type = struct.ObjectType.non_interactive
-
-
-class Blocking(ABC):
-    type = struct.ObjectType.blocking
-
-
-class Collectibles(ABC):
-    type = struct.ObjectType.collectible
-    item = None
-
-    def collect(self, player: "Player"):
-        player.inventory[self.item] = player.inventory.get(self.item, 0) + 1
-
-
-class Attackable(ABC):
-    type = struct.ObjectType.attackable
-    health = 100  # default
-
-    def attack(self, damage: int):
-        self.health -= damage
-
-
 class Object(Entity, Movable):
     """Objects on the game window other than the player and UI components"""
 
     randomise_size: bool
     original_size: tuple[int, int]
-    type: struct.ObjectType
 
     def __init__(
-            self,
-            path: PathLike,
-            size: tuple[int, int] = (50, 50),
-            randomise_size: bool = False,
+        self,
+        path: PathLike,
+        size: tuple[int, int] = (50, 50),
+        randomise_size: bool = False,
     ) -> None:
         super().__init__(path, size)
         self.randomise_size = randomise_size
@@ -76,34 +52,37 @@ class Object(Entity, Movable):
     def move(self, direction: struct.Direction) -> "Self":
         """Move the object in the given direction"""
         self._generate_mask()
-        shift = direction.sign * struct.OBJECT_STEP
         # keep future location
-        loc = self._get_future_pos(shift, direction)
+        loc = self._get_future_pos(direction)
         # generate a future object
         temp = Entity()
         temp.rect = self.rect.copy()
         temp.rect.x, temp.rect.y = loc
-        if event_manager.emit("move", self, temp)[0]:
-            # movement allowed
-            # no need of temp anymore
-            temp.kill()
-            self.rect.x, self.rect.y = loc
-            if not direction.opposite.is_in_rect(struct.SCREEN_RECT, self.rect):
-                self._randomise_size()
-                fixed_coord = struct.SCREEN_RECT[direction]
-                if direction.pos_i == 0:
-                    self.rect.center = utils.random_position(x=fixed_coord)
-                else:
-                    self.rect.center = utils.random_position(y=fixed_coord)
-        else:
-            print("blocked!!")
+
+        if not all(x:=event_manager.emit("move", self, temp)):
+            print("blocked!!", x)
+            return self
+
+        # movement allowed
+        # no need of temp anymore
+        temp.kill()
+        self.rect.x, self.rect.y = loc
+
+        if not direction.opposite.is_in_rect(struct.SCREEN_RECT, self.rect):
+            self._randomise_size()
+            fixed_coord = struct.SCREEN_RECT[direction]
+            if direction.pos_i == 0:
+                self.rect.center = utils.random_position(x=fixed_coord)
+            else:
+                self.rect.center = utils.random_position(y=fixed_coord)
         return self
 
     def random_spawn(self) -> "Self":
         """Spawn the object at a random position"""
         return self.spawn(utils.random_position())
 
-    def _get_future_pos(self, shift, direction):
+    def _get_future_pos(self, direction: struct.Direction) -> tuple[int, int]:
+        shift = direction.sign * struct.OBJECT_STEP
         x, y = self.rect.x, self.rect.y
         match direction:
             case struct.Direction.UP | struct.Direction.DOWN:
@@ -113,7 +92,7 @@ class Object(Entity, Movable):
         return x, y
 
 
-class Player(Entity, Movable, Attackable):
+class Player(Movable, Attackable, Entity):
     """Player object"""
 
     speed: int
@@ -124,9 +103,9 @@ class Player(Entity, Movable, Attackable):
     inventory: dict
 
     def __init__(
-            self,
-            size: tuple[int, int] = (50, 50),
-            init: tuple[int, int] = (0, 0)
+        self,
+        size: tuple[int, int] = (50, 50),
+        init: tuple[int, int] = (0, 0)
     ) -> None:
         super().__init__(size=size)
 

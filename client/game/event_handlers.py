@@ -1,16 +1,9 @@
-from typing import TYPE_CHECKING, TypeVar
-
 import pygame
 
 from .. import structures as struct
 from ..event_manager import event_manager
-from ..entities import Object, Player, Collectibles, NonInteractive, Attackable, Blocking
-
-if TYPE_CHECKING:
-    from . import Game
-
-ObjectLike = TypeVar("ObjectLike", Object, Collectibles, NonInteractive,  Attackable, Blocking)
-PLAYER: Player
+from ..entities import Entity, Blocking, Collectible, Attackable
+from ..game import Game
 
 MOVEMENT_BINDS: dict[int, struct.Direction] = {
     pygame.K_UP: struct.Direction.UP,
@@ -25,13 +18,13 @@ MOVEMENT_BINDS: dict[int, struct.Direction] = {
 
 
 @event_manager.on(pygame.QUIT)
-def quit(game: "Game", e: "pygame.event.Event | None" = None):
+def quit(game: Game, e: "pygame.event.Event | None" = None):
     """Quits the game on pygame.QUIT"""
     game.quit()
 
 
 @event_manager.on(pygame.KEYDOWN)
-def per_press_binds(game: "Game", e: pygame.event.Event):
+def per_press_binds(game: Game, e: pygame.event.Event):
     """Binds that are activated at the moment of pressing"""
     key: int = e.key
     match key:
@@ -40,7 +33,7 @@ def per_press_binds(game: "Game", e: pygame.event.Event):
 
 
 @event_manager.on("tick")
-def passive_binds(game: "Game"):
+def passive_binds(game: Game):
     """Binds that remain active all the time you hold button"""
     pressed = pygame.key.get_pressed()
     for key, direction in MOVEMENT_BINDS.items():
@@ -48,24 +41,26 @@ def passive_binds(game: "Game"):
             continue
         game.sprites.move(direction)
         break
-    global PLAYER
-    PLAYER = game.player
 
 
 @event_manager.on("move")
-def collide(self: "ObjectLike", temp: "ObjectLike"):
-    temp.mask = self.mask.copy()
-    temp.rect = self.rect.copy()
-    if pygame.sprite.collide_mask(temp, PLAYER):
-        print("Collide!", self, PLAYER)
-    match self.type:
-        case 0:
-            # movement blocked
+def collide(obj: Entity, temp: Entity) -> bool | None:
+    player = Game.get().player
+    temp.mask = obj.mask.copy()
+    temp.rect = obj.rect.copy()
+    if pygame.sprite.collide_mask(temp, player):
+        print("Collide!", obj, player)
+    match obj:
+        case Blocking():
             return False
-        case 1:
-            self.collect(PLAYER)
+        case Collectible():
+            obj.collect(player)
             # debug
-            print(PLAYER.inventory)
-        case 2:
+            print(player.inventory)
+            return True
+        case Attackable():
             # event_manager.emit("attack")
-            ...
+            return True
+        case _:
+            print(obj)
+            return True

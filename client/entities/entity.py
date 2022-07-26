@@ -1,10 +1,12 @@
 from typing import TYPE_CHECKING
+from abc import ABC
 from os import PathLike
 
 import pygame
 
 if TYPE_CHECKING:
     from typing_extensions import Self
+    from . import Player
 
 
 class Entity(pygame.sprite.DirtySprite):
@@ -36,3 +38,22 @@ class Entity(pygame.sprite.DirtySprite):
 
     def _generate_mask(self):
         self.mask = pygame.mask.from_surface(self.image)
+
+
+class Blocking(Entity, ABC):
+    ...
+
+
+class Collectible(Entity, ABC):
+    item = None
+
+    def collect(self, player: "Player"):  # -> item
+        player.inventory[self.item] = player.inventory.get(self.item, 0) + 1
+
+
+class Attackable(Entity, ABC):
+    health = 100  # default
+
+    def attack(self, damage: int) -> int:
+        self.health -= damage
+        return self.health

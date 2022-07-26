@@ -92,12 +92,3 @@ opposite_directions: dict[Direction, Direction] = {
     Direction.LEFT: Direction.RIGHT
 }
 opposite_directions.update({v: k for k, v in opposite_directions.items()})
-
-
-class ObjectType(IntEnum):
-    """Defines object type"""
-
-    non_interactive = -1
-    blocking = 0
-    collectible = 1
-    attackable = 2
