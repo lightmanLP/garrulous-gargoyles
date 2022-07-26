@@ -1,13 +1,16 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar
 
 import pygame
 
 from .. import structures as struct
 from ..event_manager import event_manager
+from ..entities import Object, Player, Collectibles, NonInteractive, Attackable, Blocking
 
 if TYPE_CHECKING:
     from . import Game
 
+ObjectLike = TypeVar("ObjectLike", Object, Collectibles, NonInteractive,  Attackable, Blocking)
+PLAYER: Player
 
 MOVEMENT_BINDS: dict[int, struct.Direction] = {
     pygame.K_UP: struct.Direction.UP,
@@ -45,3 +48,24 @@ def passive_binds(game: "Game"):
             continue
         game.sprites.move(direction)
         break
+    global PLAYER
+    PLAYER = game.player
+
+
+@event_manager.on("move")
+def collide(self: "ObjectLike", temp: "ObjectLike"):
+    temp.mask = self.mask.copy()
+    temp.rect = self.rect.copy()
+    if pygame.sprite.collide_mask(temp, PLAYER):
+        print("Collide!", self, PLAYER)
+    match self.type:
+        case 0:
+            # movement blocked
+            return False
+        case 1:
+            self.collect(PLAYER)
+            # debug
+            print(PLAYER.inventory)
+        case 2:
+            # event_manager.emit("attack")
+            ...
