@@ -44,23 +44,22 @@ def passive_binds(game: Game):
 
 
 @event_manager.on("move")
-def collide(obj: Entity, temp: Entity) -> bool | None:
+def collide(obj: Entity, temp: Entity) -> bool:
     player = Game.get().player
     temp.mask = obj.mask.copy()
     temp.rect = obj.rect.copy()
     if pygame.sprite.collide_mask(temp, player):
         print("Collide!", obj, player)
-    match obj:
-        case Blocking():
-            return False
-        case Collectible():
-            obj.collect(player)
-            # debug
-            print(player.inventory)
-            return True
-        case Attackable():
-            # event_manager.emit("attack")
-            return True
-        case _:
-            print(obj)
-            return True
+
+    if isinstance(obj, Collectible):
+        obj.collect(player)
+        # debug
+        print(player.inventory)
+
+    if isinstance(obj, Attackable):
+        # event_manager.emit("attack")
+        ...
+
+    if isinstance(obj, Blocking):
+        return False
+    return True
