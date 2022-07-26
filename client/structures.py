@@ -1,4 +1,6 @@
-from typing import Literal, SupportsInt
+"""Defines commonly used structures throughout the code"""
+
+from typing import Literal
 from enum import IntEnum
 from pathlib import Path
 
@@ -17,6 +19,8 @@ SPRITES_PATH = IMAGES_PATH / "sprites"
 
 
 class Color(IntEnum):
+    """Commonly used colours"""
+
     RED = 0xFF0000
     GREEN = 0x00FF00
     BLUE = 0x0000FF
@@ -26,10 +30,13 @@ class Color(IntEnum):
 
     @property
     def rgba(self) -> int:
+        """Returns rgba compatible integer for pygame.Color"""
         return (self.value << 8) + 0xFF
 
 
 class Direction(IntEnum):
+    """The 4 directions"""
+
     LEFT = 0
     UP = 1
     RIGHT = 2
@@ -42,10 +49,12 @@ class Direction(IntEnum):
 
     @property
     def side(self) -> str:
+        """Get side name"""
         return SIDE_NAMES[self]
 
     @property
     def opposite(self) -> "Direction":
+        """Get the side opposite to current side"""
         return opposite_directions[self]
 
     @property
@@ -54,7 +63,7 @@ class Direction(IntEnum):
         return self.value < 2
 
     @property
-    def pos_i(self) -> SupportsInt[Literal[0, 1]]:
+    def pos_i(self) -> Literal[0, 1]:
         """Position index for (x, y) sequences"""
         return self.value & 1
 
@@ -63,24 +72,23 @@ class Direction(IntEnum):
         side = getattr(contains, self.opposite.side)
         if self.opposite.is_pos_definer:
             return side <= rect[self.value]
-        else:
-            return side >= rect[self.value]
+        return side >= rect[self.value]
 
 
 DIRECTIONS_SIGN: dict[Direction, int] = {
     Direction.UP: 1,
     Direction.DOWN: -1,
     Direction.LEFT: 1,
-    Direction.RIGHT: -1,
+    Direction.RIGHT: -1
 }
 SIDE_NAMES: dict[Direction, str] = {
     Direction.UP: "top",
     Direction.DOWN: "bottom",
     Direction.LEFT: "left",
-    Direction.RIGHT: "right",
+    Direction.RIGHT: "right"
 }
 opposite_directions: dict[Direction, Direction] = {
     Direction.UP: Direction.DOWN,
-    Direction.LEFT: Direction.RIGHT,
+    Direction.LEFT: Direction.RIGHT
 }
 opposite_directions.update({v: k for k, v in opposite_directions.items()})

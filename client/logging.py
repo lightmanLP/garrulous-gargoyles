@@ -51,7 +51,7 @@ if DEBUG_FILE:
 def _handle_exception(
     exc_type: type[BaseException],
     exc_value: BaseException,
-    exc_traceback: TracebackType,
+    exc_traceback: TracebackType
 ) -> None:
     if not issubclass(exc_type, KeyboardInterrupt):
         error_logger.exception(
@@ -77,7 +77,7 @@ def _cleanup_old_logs():
             LOGS_PATH.glob("debug_log_*.txt"),
         ),
         key=os.path.getctime,
-        reverse=True,
+        reverse=True
     )
     for i in log_files[log_files_count:]:
         if i.is_file() and i.name != filename:

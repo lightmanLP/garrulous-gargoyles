@@ -13,6 +13,8 @@ logger = log.getLogger("game")
 
 
 class Game:
+    """The game class, all core logic is defined here or called from here"""
+
     running: bool
     screen: pygame.Surface
     clock: pygame.time.Clock
@@ -31,13 +33,16 @@ class Game:
         self.sprites.add(Player().spawn(struct.CENTER))
 
     def _generate_background(self):
+        """Generates the background"""
         self.sprites.add(
             *(Grass().random_spawn() for _ in range(20)),
             *(Stone().random_spawn() for _ in range(20)),
             *(Tree().random_spawn() for _ in range(10)),
         )
+        logger.info("Background generated")
 
     def mainloop(self) -> NoReturn:
+        """The game main loop"""
         logger.info("Staring main game loop")
         self.running = True
 
@@ -52,11 +57,13 @@ class Game:
         logger.info("Terminating main game loop")
 
     def quit(self):
+        """Quit the game"""
         self.running = False
 
 
 @event_manager.on("draw")
 def draw(game: Game):
+    """Draw the sprites onto the game window"""
     game.screen.fill(struct.Color.EMERALD)
     game.sprites.draw(game.screen)
 
