@@ -5,7 +5,7 @@ logger = log.getLogger("runner")
 
 
 def run():
+    """Run the game"""
     logger.info("Starting the game")
-    game = Game()
-    game.main()
+    Game().mainloop()
     logger.info("Exiting the game")

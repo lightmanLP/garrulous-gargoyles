@@ -1,9 +1,11 @@
 # garrulous-gargoyles
 
+## TODO
+
 ## Instructions on how to install
 
 pre-requisites:
-- python 3.6.2 or higher
+- python 3.10 or higher
 - poetry
 - git
 

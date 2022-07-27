@@ -25,6 +25,7 @@ black = "~22.6.0"
 
 # Flake8 plugins, see https://github.com/python-discord/code-jam-template/tree/main#plugin-list
 flake8-docstrings = "~1.6.0"
+typing-extensions = "~4.3.0"
 
 
 [build-system]
