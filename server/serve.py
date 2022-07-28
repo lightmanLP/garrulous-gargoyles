@@ -1,5 +1,6 @@
 import websockets
 import asyncio
+import json
 
 
 def print_hello():
@@ -25,10 +26,11 @@ class Server:
         try:
             asyncio.run(self.serve())
         except KeyboardInterrupt:
+            print("Server stopped.")
             return
 
     async def serve(self):
-        print("Server listening on port", self.port)
+        print(f"Server listening on {self.address}:{self.port}")
 
         async with websockets.serve(self.handle_websocket, self.address, self.port):
             await asyncio.Future()
@@ -38,14 +40,13 @@ class Server:
     async def handle_websocket(self, websocket, path):
         while True:
             try:
-                message = await websocket.recv()
+                message = await websocket.recv()  # Should received a dictionary like string
             except websockets.ConnectionClosedOK:
-                print("Client disconnected")
+                self.event_handler.handle_event("leave", websocket)
                 break
 
             print("websocket received:", websocket)
+            print("message:", message)
 
-            async for message in websocket:
-                print("Received message:", message)
-                await websocket.send("Pong: " + message)
-                self.event_handler.handle_event(message)
+            await websocket.send("Pong: " + message)
+            self.event_handler.handle_event(message)
