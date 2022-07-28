@@ -1,6 +1,15 @@
-import websockets
+from typing import NoReturn
 import asyncio
 import json
+
+from websockets.exceptions import ConnectionClosedOK
+from websockets.server import WebSocketServerProtocol
+from websockets.server import serve as ws_serve
+
+from .event_manager import event_manager
+from .logging import log
+
+logger = log.getLogger("server")
 
 
 def parse_data(data):
@@ -11,49 +20,29 @@ def serialize_data(data):
     return json.dumps(data)
 
 
-async def print_hello(*args, **kwargs):
-    print("Hello World!")
-
-
-async def print_bye(*args, **kwargs):
-    print("Goodbye World!")
-
-
 class Server:
-    def __init__(self, address, port, event_handler):
-        self.address = address
-        self.port = port
-        self.event_handler = event_handler
-        self.setup_events()
+    connections: list[WebSocketServerProtocol]
 
-    def setup_events(self):
-        eh = self.event_handler
-        eh.register("enter", print_hello)
-        eh.register("leave", print_bye)
+    def __init__(self) -> None:
+        # TODO: make connections a hashmap and use player_id as key
+        self.connections = list()
 
-    def start(self):
-        try:
-            asyncio.run(self.serve())
-        except KeyboardInterrupt:
-            print("Server stopped.")
-            return
-
-    async def serve(self):
-        print(f"[LOG] Server listening on {self.address}:{self.port}")
-
-        async with websockets.serve(self.handle_websocket, self.address, self.port):
+    async def serve(self, address: str, port: int) -> NoReturn:
+        async with ws_serve(self.ws_callback, address, port):
             await asyncio.Future()
 
-        print("[LOG] Server closed")
+    async def ws_callback(self, ws: WebSocketServerProtocol):
+        self.connections.append(ws)
+        try:
+            while True:
+                try:
+                    data = await ws.recv()  # Should received a dictionary like string
+                except ConnectionClosedOK:
+                    await event_manager.emit("leave", ws)
+                    break
 
-    async def handle_websocket(self, websocket, path):
-        while True:
-            try:
-                data = await websocket.recv()  # Should received a dictionary like string
-            except websockets.ConnectionClosedOK:
-                await self.event_handler.handle_event("leave", websocket)
-                break
-
-            data = parse_data(data)  # now a dictionary
-            print(f"[LOG] Received: {data}")
-            await self.event_handler.handle_event(data["type"], data, websocket)
+                data = parse_data(data)  # now a dictionary
+                logger.debug(f"received: {data}")
+                event_manager.dispatch(data["type"], ws, data)
+        finally:
+            self.connections.remove(ws)
