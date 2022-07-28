@@ -1,8 +1,8 @@
-from . import server
-from . import events
+from . import serve
+from . import event
 
-Server = server.Server
-EventHandler = events.EventHandler
+Server = serve.Server
+EventHandler = event.EventHandler
 
 import websockets
 import asyncio
