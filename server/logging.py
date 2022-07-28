@@ -21,11 +21,7 @@ filename = f"log_{current_time}.txt"
 log_files_count = LOGS_HISTORY_LENGTH  # pylint: disable=invalid-name
 
 stream_handler = log.StreamHandler(sys.stdout)
-main_handler = log.FileHandler(
-    LOGS_PATH / filename,
-    mode="a",
-    encoding="UTF-8"
-)
+main_handler = log.FileHandler(LOGS_PATH / filename, mode="a", encoding="UTF-8")
 handlers = [stream_handler, main_handler]
 
 stream_handler.setLevel(log.INFO)
@@ -40,9 +36,7 @@ log.basicConfig(
 if DEBUG_FILE:
     log_files_count *= 2
     debug_handler = log.FileHandler(
-        LOGS_PATH / f"debug_{filename}",
-        mode="a",
-        encoding="UTF-8"
+        LOGS_PATH / f"debug_{filename}", mode="a", encoding="UTF-8"
     )
     handlers.append(debug_handler)
     debug_handler.setLevel(log.DEBUG)
@@ -51,12 +45,11 @@ if DEBUG_FILE:
 def _handle_exception(
     exc_type: type[BaseException],
     exc_value: BaseException,
-    exc_traceback: TracebackType
+    exc_traceback: TracebackType,
 ) -> None:
     if not issubclass(exc_type, KeyboardInterrupt):
         error_logger.exception(
-            "Uncaught exception",
-            exc_info=(exc_type, exc_value, exc_traceback)
+            "Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback)
         )
     return sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
@@ -77,7 +70,7 @@ def _cleanup_old_logs():
             LOGS_PATH.glob("debug_log_*.txt"),
         ),
         key=os.path.getctime,
-        reverse=True
+        reverse=True,
     )
     for i in log_files[log_files_count:]:
         if i.is_file() and i.name != filename:

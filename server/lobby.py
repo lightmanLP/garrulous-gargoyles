@@ -13,7 +13,7 @@ class Lobby:
 
     def remove_player(self, player_id) -> Player:
         return self.players.pop(player_id)
-        
+
 
 class LobbyManager:
     def __init__(self):
@@ -23,13 +23,13 @@ class LobbyManager:
         lobby = Lobby(id, name)
         self.lobbies[id] = lobby
         return lobby
-    
+
     def delete_lobby(self, lobby: Lobby) -> None:
         del self.lobbies[lobby.id]
 
     def add_player_to_lobby(self, player: Player, lobby: Lobby) -> None:
         self.lobbies[lobby.id].add_player(player)
-    
+
     def remove_player_from_lobby(self, player_id: str) -> Player:
         lobby = self.find_player_lobby(player_id)
         player = self.lobbies[lobby.id].remove_player(player_id)
