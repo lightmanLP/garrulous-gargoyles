@@ -1,3 +1,4 @@
+import json
 import websockets
 import asyncio
 
@@ -14,7 +15,7 @@ class Client:
         url = f"ws://{self.address}:{self.port}"
 
         async with websockets.connect(url) as ws:
-            await ws.send("Hello World!")
+            await ws.send('{"type": "enter"}')
             while True:
                 msg = await ws.recv()
                 print(msg)

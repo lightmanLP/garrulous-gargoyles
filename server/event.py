@@ -1,4 +1,6 @@
 class EventHandler:
+    """A class that handles events"""
+
     def __init__(self):
         self.events = {}
 
@@ -12,9 +14,9 @@ class EventHandler:
         if event_type in self.events:
             self.events[event_type].remove(callback)
 
-    def handle_event(self, event_type, *args, **kwargs):
+    async def handle_event(self, event_type, *args, **kwargs):
         if event_type in self.events:
             for callback in self.events[event_type]:
-                callback(*args, **kwargs)
+                return await callback(*args, **kwargs)
         else:
             print("No event handler for", event_type)

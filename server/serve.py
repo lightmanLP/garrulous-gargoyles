@@ -3,11 +3,19 @@ import asyncio
 import json
 
 
-def print_hello():
+def parse_data(data):
+    return json.loads(data)
+
+
+def serialize_data(data):
+    return json.dumps(data)
+
+
+async def print_hello(*args, **kwargs):
     print("Hello World!")
 
 
-def print_bye():
+async def print_bye(*args, **kwargs):
     print("Goodbye World!")
 
 
@@ -16,6 +24,7 @@ class Server:
         self.address = address
         self.port = port
         self.event_handler = event_handler
+        self.setup_events()
 
     def setup_events(self):
         eh = self.event_handler
@@ -30,23 +39,21 @@ class Server:
             return
 
     async def serve(self):
-        print(f"Server listening on {self.address}:{self.port}")
+        print(f"[LOG] Server listening on {self.address}:{self.port}")
 
         async with websockets.serve(self.handle_websocket, self.address, self.port):
             await asyncio.Future()
 
-        print("Server closed")
+        print("[LOG] Server closed")
 
     async def handle_websocket(self, websocket, path):
         while True:
             try:
-                message = await websocket.recv()  # Should received a dictionary like string
+                data = await websocket.recv()  # Should received a dictionary like string
             except websockets.ConnectionClosedOK:
-                self.event_handler.handle_event("leave", websocket)
+                await self.event_handler.handle_event("leave", websocket)
                 break
 
-            print("websocket received:", websocket)
-            print("message:", message)
-
-            await websocket.send("Pong: " + message)
-            self.event_handler.handle_event(message)
+            data = parse_data(data)  # now a dictionary
+            print(f"[LOG] Received: {data}")
+            await self.event_handler.handle_event(data["type"], data, websocket)
