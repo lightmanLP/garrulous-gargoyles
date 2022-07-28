@@ -1,11 +1,11 @@
 from . import serve
 from . import event
+import websockets
+import asyncio
+
 
 Server = serve.Server
 EventHandler = event.EventHandler
-
-import websockets
-import asyncio
 
 
 class Client:
