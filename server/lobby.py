@@ -9,9 +9,9 @@ class Lobby:
 
     def __init__(self, name: str):
         salt = random.randbytes(16)
-        self.id = hashlib.md5(salt + name.encode()).hexdigest()
-        self.name = name
-        self.players: dict[str, Player] = {}
+        self.id: bytes = hashlib.md5(salt + name.encode()).digest()[:4]
+        self.name: str = name
+        self.players: dict[bytes, Player] = {}
 
     def add_player(self, player: Player):
         """Add a player to the lobby"""
