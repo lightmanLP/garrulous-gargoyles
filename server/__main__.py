@@ -1,3 +1,9 @@
+from . import server
+from . import events
+
+Server = server.Server
+EventHandler = events.EventHandler
+
 import websockets
 import asyncio
 
@@ -22,3 +28,7 @@ class Client:
 
 client = Client("localhost", 8765)
 client.start()
+
+if __name__ == "__main__":
+    server = Server("localhost", 8765, EventHandler())
+    server.start()
