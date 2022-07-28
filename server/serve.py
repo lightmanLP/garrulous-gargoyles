@@ -41,7 +41,7 @@ class Server:
             try:
                 message = await websocket.recv()  # Should received a dictionary like string
             except websockets.ConnectionClosedOK:
-                self..event_handler.handle_event("leave", websocket)
+                self.event_handler.handle_event("leave", websocket)
                 break
 
             print("websocket received:", websocket)
