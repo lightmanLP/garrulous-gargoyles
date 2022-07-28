@@ -1,10 +1,13 @@
 from typing import Dict
+import hashlib
+import random
 from player import Player
 
 
 class Lobby:
-    def __init__(self, lobby_id: str, name: str):
-        self.id = lobby_id
+    def __init__(self, name: str):
+        salt = random.randbytes(16)
+        self.id = hashlib.md5(salt + name.encode()).hexdigest()
         self.name = name
         self.players: dict[str, Player] = {}
 
@@ -19,9 +22,9 @@ class LobbyManager:
     def __init__(self):
         self.lobbies: Dict[str, Lobby] = {}
 
-    def create_lobby(self, lobby_id: str, name: str) -> Lobby:
-        lobby = Lobby(lobby_id, name)
-        self.lobbies[lobby_id] = lobby
+    def create_lobby(self, name: str) -> Lobby:
+        lobby = Lobby(name)
+        self.lobbies[lobby.id] = lobby
         return lobby
 
     def delete_lobby(self, lobby: Lobby) -> None:
