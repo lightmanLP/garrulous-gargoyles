@@ -3,8 +3,8 @@ from player import Player
 
 
 class Lobby:
-    def __init__(self, id: str, name: str):
-        self.id = id
+    def __init__(self, lobby_id: str, name: str):
+        self.id = lobby_id
         self.name = name
         self.players: dict[str, Player] = {}
 
@@ -19,9 +19,9 @@ class LobbyManager:
     def __init__(self):
         self.lobbies: Dict[str, Lobby] = {}
 
-    def create_lobby(self, id: str, name: str) -> Lobby:
-        lobby = Lobby(id, name)
-        self.lobbies[id] = lobby
+    def create_lobby(self, lobby_id: str, name: str) -> Lobby:
+        lobby = Lobby(lobby_id, name)
+        self.lobbies[lobby_id] = lobby
         return lobby
 
     def delete_lobby(self, lobby: Lobby) -> None:
