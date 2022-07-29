@@ -1,8 +1,8 @@
 import pygame
 
 from .. import structures as struct
+from ..entities import Attackable, Blocking, Collectible, Entity
 from ..event_manager import event_manager
-from ..entities import Entity, Blocking, Collectible, Attackable
 from .game import Game
 
 MOVEMENT_BINDS: dict[int, struct.Direction] = {
@@ -43,25 +43,17 @@ def passive_binds(game: Game):
         break
 
 
-@event_manager.on("move")
-def collide(obj: Entity, temp: Entity) -> bool:
-    player = Game.get().player
-    temp.mask = obj.mask.copy()
-    temp.rect = obj.rect.copy()
-    if pygame.sprite.collide_mask(temp, player):
-        print("Collide!", obj, player)
-    else:
-        return True
-
-    if isinstance(obj, Collectible):
-        obj.collect(player)
+@event_manager.on("collide")
+def collide(game: Game, entity: Entity) -> bool:
+    if isinstance(entity, Collectible):
+        entity.collect(game.player)
         # debug
-        # print(player.inventory)
+        # print(game.player.inventory)
 
-    if isinstance(obj, Attackable):
+    if isinstance(entity, Attackable):
         # event_manager.emit("attack")
         ...
 
-    if isinstance(obj, Blocking):
+    if isinstance(entity, Blocking):
         return False
     return True

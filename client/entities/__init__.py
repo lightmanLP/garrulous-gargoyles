@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar, Container
 from abc import ABC
 from os import PathLike
 import random
@@ -7,9 +7,9 @@ import pygame
 
 from .. import structures as struct
 from .. import utils
-from .entity import Entity, Blocking, Collectible, Attackable
-from .spritesheet import SpriteSheet
 from ..event_manager import event_manager
+from .entity import Attackable, Blocking, Collectible, Collidable, Entity
+from .spritesheet import SpriteSheet
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -26,16 +26,19 @@ class Movable(ABC):
 class Object(Entity, Movable):
     """Objects on the game window other than the player and UI components"""
 
+    PATH: ClassVar[PathLike | None] = None
     randomise_size: bool
     original_size: tuple[int, int]
 
     def __init__(
         self,
-        path: PathLike,
         size: tuple[int, int] = (50, 50),
         randomise_size: bool = False,
+        layer: int | None = None,
     ) -> None:
-        super().__init__(path, size)
+        super().__init__(self.__class__.PATH, size)
+        if layer is not None:
+            self._layer = layer
         self.randomise_size = randomise_size
         self.original_size = size
         self._randomise_size()
@@ -52,26 +55,12 @@ class Object(Entity, Movable):
     def move(self, direction: struct.Direction) -> "Self":
         """Move the object in the given direction"""
         self._generate_mask()
-        # keep future location
-        loc = self._get_future_pos(direction)
         # generate a future object
-        temp = Entity()
-        temp.rect = self.rect.copy()
-        temp.rect.x, temp.rect.y = loc
-
-        if not all(x:=event_manager.emit("move", self, temp)):
-            print("blocked!!", x)
-            return self
-
-        # movement allowed
-        # no need of temp anymore
-        temp.kill()
-        self.rect.x, self.rect.y = loc
-
+        self.rect.x, self.rect.y = direction.move(self.rect.x, self.rect.y)
         if not direction.opposite.is_in_rect(struct.SCREEN_RECT, self.rect):
             self._randomise_size()
             fixed_coord = struct.SCREEN_RECT[direction]
-            if direction.pos_i == 0:
+            if direction.is_horizontal:
                 self.rect.center = utils.random_position(x=fixed_coord)
             else:
                 self.rect.center = utils.random_position(y=fixed_coord)
@@ -80,16 +69,6 @@ class Object(Entity, Movable):
     def random_spawn(self) -> "Self":
         """Spawn the object at a random position"""
         return self.spawn(utils.random_position())
-
-    def _get_future_pos(self, direction: struct.Direction) -> tuple[int, int]:
-        shift = direction.sign * struct.OBJECT_STEP
-        x, y = self.rect.x, self.rect.y
-        match direction:
-            case struct.Direction.UP | struct.Direction.DOWN:
-                y += shift
-            case struct.Direction.LEFT | struct.Direction.RIGHT:
-                x += shift
-        return x, y
 
 
 class Player(Movable, Attackable, Entity):
@@ -143,9 +122,17 @@ class Player(Movable, Attackable, Entity):
 class Group(pygame.sprite.LayeredUpdates, Movable):
     """Group of sprites, can be layered"""
 
-    def move(self, direction: struct.Direction) -> "Self":
+    def move(
+        self,
+        direction: struct.Direction,
+        exclude: Container[pygame.sprite.Sprite] = ()
+    ) -> "Self":
         """Move the members of this group in the given direction"""
         for sprite in self.sprites():
-            if isinstance(sprite, Movable):
-                sprite.move(direction)
+            if (
+                not isinstance(sprite, Movable)
+                or sprite in exclude
+            ):
+                continue
+            sprite.move(direction)
         return self

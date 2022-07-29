@@ -1,17 +1,46 @@
-from typing import TYPE_CHECKING, NoReturn, ClassVar
+from typing import TYPE_CHECKING, ClassVar, NoReturn
 
 import pygame
 
 from .. import structures as struct
-from ..entities import Group, Player
+from ..entities import Blocking, Collidable, Entity, Group, Player
 from ..event_manager import event_manager
 from ..logging import log
-from .objects import Grass, Stone, Tree
+from .entities import Grass, Stone, Tree
 
 if TYPE_CHECKING:
     from typing_extensions import Self
 
 logger = log.getLogger("game")
+
+
+class ScreenGroup(Group):
+    def move(self, direction: struct.Direction) -> "Self":
+        game = Game.get()
+
+        prediction = Entity()
+        p_rect = game.player.rect.copy()
+        p_rect.x, p_rect.y = direction.opposite.move(
+            *struct.CENTER,
+            struct.COLLISION_DISTANCE
+        )
+        prediction.rect = p_rect
+        prediction.mask = game.player.mask.copy()
+        exclude = list()
+
+        for sprite in self.sprites():
+            if (
+                sprite is game.player
+                or not isinstance(sprite, Collidable)
+                or not pygame.sprite.collide_mask(sprite, prediction)
+            ):
+                continue
+            if not all(event_manager.emit("collide", game, sprite)):
+                return self
+            if isinstance(sprite, Blocking):
+                exclude.append(sprite)
+
+        return super().move(direction, exclude=exclude)
 
 
 class Game:
@@ -22,9 +51,9 @@ class Game:
     running: bool
     screen: pygame.Surface
     clock: pygame.time.Clock
-    sprites: Group
+    sprites: ScreenGroup
 
-    def __new__(cls, *args, **kwargs) -> "Self":
+    def __new__(cls: type["Self"], *args, **kwargs) -> "Self":
         assert cls._instance is None
         cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
@@ -36,7 +65,7 @@ class Game:
         self.running = False
         self.screen = pygame.display.set_mode(struct.SCREEN_SIZE)
         self.clock = pygame.time.Clock()
-        self.sprites = Group()
+        self.sprites = ScreenGroup()
 
         self._generate_background()
         self.player = Player().spawn(struct.CENTER)

@@ -6,6 +6,7 @@ import pygame
 
 if TYPE_CHECKING:
     from typing_extensions import Self
+
     from . import Player
 
 
@@ -40,18 +41,26 @@ class Entity(pygame.sprite.DirtySprite):
         self.mask = pygame.mask.from_surface(self.image)
 
 
-class Blocking(Entity, ABC):
+class Collidable(Entity, ABC):
     ...
 
 
-class Collectible(Entity, ABC):
+class Blocking(Collidable, ABC):
+    ...
+
+
+class Collectible(Collidable, ABC):
     item = None
+
+    def __new__(cls: type["Self"], *args, **kwargs) -> "Self":
+        assert cls.item is not None
+        return super().__new__(cls, *args, **kwargs)
 
     def collect(self, player: "Player"):  # -> item
         player.inventory[self.item] = player.inventory.get(self.item, 0) + 1
 
 
-class Attackable(Entity, ABC):
+class Attackable(Collidable, ABC):
     health = 100  # default
 
     def attack(self, damage: int) -> int:

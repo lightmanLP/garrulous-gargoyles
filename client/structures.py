@@ -11,6 +11,7 @@ CENTER = WIDTH // 2, HEIGHT // 2
 SCREEN_RECT = (0, 0, *SCREEN_SIZE)
 
 OBJECT_STEP = 5
+COLLISION_DISTANCE = OBJECT_STEP + 3
 
 ROOT_PATH = Path.cwd()
 RESOURCES_PATH = ROOT_PATH / "resources"
@@ -67,12 +68,28 @@ class Direction(IntEnum):
         """Position index for (x, y) sequences"""
         return self.value & 1
 
+    @property
+    def is_horizontal(self) -> bool:
+        return not self.pos_i
+
+    @property
+    def is_vertical(self) -> bool:
+        return not self.is_horizontal
+
     def is_in_rect(self, rect: tuple[int, int, int, int], contains: HasSides) -> bool:
-        """Checks if object still in some rect after move in this direction"""
+        """Checks if object in some rect after move in this direction"""
         side = getattr(contains, self.opposite.side)
         if self.opposite.is_pos_definer:
             return side <= rect[self.value]
         return side >= rect[self.value]
+
+    def move(self, x: int, y: int, step: int = OBJECT_STEP) -> tuple[int, int]:
+        shift = self.sign * step
+        if self.is_horizontal:
+            x += shift
+        else:
+            y += shift
+        return (x, y)
 
 
 DIRECTIONS_SIGN: dict[Direction, int] = {

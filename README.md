@@ -1,6 +1,7 @@
 # garrulous-gargoyles
 
 ## TODO
+[ ] fix spawning inside of objects
 
 ## Instructions on how to install
 
