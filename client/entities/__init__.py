@@ -7,13 +7,24 @@ import pygame
 
 from .. import structures as struct
 from .. import utils
-from ..event_manager import event_manager
 from .entity import Attackable, Blocking, Collectible, Collidable, Entity
 from .spritesheet import SpriteSheet
 
 if TYPE_CHECKING:
     from typing_extensions import Self
-# TODO: add __all__
+
+__all__ = (
+    "Attackable",
+    "Blocking",
+    "Collectible",
+    "Collidable",
+    "Entity",
+    "SpriteSheet",
+    "Movable",
+    "Object",
+    "Player",
+    "Group",
+)
 
 
 class Movable(ABC):

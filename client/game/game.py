@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, ClassVar, NoReturn
 import pygame
 
 from .. import structures as struct
-from ..entities import Blocking, Collidable, Entity, Group, Player
+from ..entities import Blocking, Collidable, Entity, Group, Object, Player
 from ..event_manager import event_manager
 from ..logging import log
 from .entities import Grass, Stone, Tree
@@ -21,7 +21,7 @@ class ScreenGroup(Group):
         prediction = Entity()
         p_rect = game.player.rect.copy()
         p_rect.x, p_rect.y = direction.opposite.move(
-            *struct.CENTER,
+            p_rect.x, p_rect.y,
             struct.COLLISION_DISTANCE
         )
         prediction.rect = p_rect
@@ -104,3 +104,24 @@ class Game:
     def quit(self):
         """Quit the game"""
         self.running = False
+
+
+@event_manager.on("draw")
+def draw(game: Game):
+    """Draw the sprites onto the game window"""
+    game.screen.fill(struct.Color.EMERALD)
+    game.sprites.draw(game.screen)
+
+    # masks draw
+    # for sprite in game.sprites:
+    #     if not isinstance(sprite, (Object, Player)):
+    #         continue
+    #     olist = tuple(
+    #         (sprite.rect.x + x, sprite.rect.y + y)
+    #         for x, y in sprite.mask.outline()
+    #     )
+    #     pygame.draw.polygon(game.screen, struct.Color.BLACK, olist, 0)
+
+    font = pygame.font.SysFont("None", 40)
+    text = font.render("Hello World!", True, struct.Color.GREEN.rgba)
+    game.screen.blit(text, (300, 300))
