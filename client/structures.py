@@ -70,10 +70,13 @@ class Direction(IntEnum):
 
     @property
     def is_vertical(self) -> bool:
+        """Check if vertical"""
         return bool(self.pos_i)
 
     @property
     def is_horizontal(self) -> bool:
+        """Check if horizontal"""
+        # ie. not vertical
         return not self.is_vertical
 
     def is_in_rect(self, rect: tuple[int, int, int, int], contains: HasSides) -> bool:
@@ -84,12 +87,13 @@ class Direction(IntEnum):
         return side >= rect[self.value]
 
     def move(self, x: int, y: int, step: int = OBJECT_STEP) -> tuple[int, int]:
+        """Returns the future location if the sprite moves"""
         shift = self.sign * step
         if self.is_horizontal:
             x += shift
         else:
             y += shift
-        return (x, y)
+        return x, y
 
 
 DIRECTIONS_SIGN: dict[Direction, int] = {

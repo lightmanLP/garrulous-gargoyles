@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, ClassVar, NoReturn
 import pygame
 
 from .. import structures as struct
-from ..entities import Blocking, Collidable, Entity, Group, Object, Player
+from ..entities import Blocking, Collidable, Entity, Group, Player
 from ..event_manager import event_manager
 from ..logging import log
 from .entities import Grass, Stone, Tree
@@ -15,7 +15,10 @@ logger = log.getLogger("game")
 
 
 class ScreenGroup(Group):
-    def move(self, direction: struct.Direction) -> "Self":
+    """Group of sprites on the screen"""
+
+    def move(self, direction: struct.Direction, exclude=None) -> "Self":
+        """Move the member sprites"""
         game = Game.get()
 
         prediction = Entity()
@@ -26,7 +29,7 @@ class ScreenGroup(Group):
         )
         prediction.rect = p_rect
         prediction.mask = game.player.mask.copy()
-        exclude = list()
+        exclude = [] if exclude is None else exclude
 
         for sprite in self.sprites():
             if (
@@ -54,6 +57,7 @@ class Game:
     sprites: ScreenGroup
 
     def __new__(cls: type["Self"], *args, **kwargs) -> "Self":
+        """TODO: fixme"""
         assert cls._instance is None
         cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
@@ -73,6 +77,7 @@ class Game:
 
     @classmethod
     def get(cls) -> "Self":
+        """Get the game instance"""
         if cls._instance is None:
             return cls()
         return cls._instance

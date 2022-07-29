@@ -45,6 +45,7 @@ def passive_binds(game: Game):
 
 @event_manager.on("collide")
 def collide(game: Game, entity: Entity) -> bool:
+    """Respond to collision triggers"""
     if isinstance(entity, Collectible):
         entity.collect(game.player)
         # debug

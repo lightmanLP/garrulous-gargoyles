@@ -42,27 +42,34 @@ class Entity(pygame.sprite.DirtySprite):
 
 
 class Collidable(Entity, ABC):
-    ...
+    """Abstracts entities that can collide"""
 
 
 class Blocking(Collidable, ABC):
-    ...
+    """Abstracts blocking entities"""
 
 
 class Collectible(Collidable, ABC):
+    """Abstracts entities that can be collected"""
+
     item = None
 
     def __new__(cls: type["Self"], *args, **kwargs) -> "Self":
+        """TODO: #this is a public method?? fixme"""
         assert cls.item is not None
         return super().__new__(cls, *args, **kwargs)
 
     def collect(self, player: "Player"):  # -> item
+        """Collect FROM this entity"""
         player.inventory[self.item] = player.inventory.get(self.item, 0) + 1
 
 
 class Attackable(Collidable, ABC):
+    """Abstracts entities that can be attacked"""
+
     health = 100  # default
 
     def attack(self, damage: int) -> int:
+        """Attack DEALT ON THIS entity"""
         self.health -= damage
         return self.health
