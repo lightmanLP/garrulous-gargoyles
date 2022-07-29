@@ -69,12 +69,12 @@ class Direction(IntEnum):
         return self.value & 1
 
     @property
-    def is_horizontal(self) -> bool:
-        return not self.pos_i
+    def is_vertical(self) -> bool:
+        return bool(self.pos_i)
 
     @property
-    def is_vertical(self) -> bool:
-        return not self.is_horizontal
+    def is_horizontal(self) -> bool:
+        return not self.is_vertical
 
     def is_in_rect(self, rect: tuple[int, int, int, int], contains: HasSides) -> bool:
         """Checks if object in some rect after move in this direction"""
