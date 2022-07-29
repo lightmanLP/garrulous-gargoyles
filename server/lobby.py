@@ -24,6 +24,10 @@ class Lobby:
         player.lobby = None
         return player
 
+    def __del__(self):
+        for player in self.players.values():
+            player.lobby = None
+
 
 class LobbyManager:
     """Manage lobbies for a whole server"""

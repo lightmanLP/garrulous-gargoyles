@@ -1,6 +1,7 @@
 # garrulous-gargoyles
 
 ## TODO
+[ ] make most of server funcs async
 
 ## Instructions on how to install
 
