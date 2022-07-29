@@ -70,7 +70,10 @@ class Object(Entity, Movable):
         self.rect.x, self.rect.y = direction.move(self.rect.x, self.rect.y)
         if not direction.opposite.is_in_rect(struct.SCREEN_RECT, self.rect):
             self._randomise_size()
-            fixed_coord = struct.SCREEN_RECT[direction]
+            fixed_coord = (
+                struct.SCREEN_RECT[direction]
+                - direction.sign * self.size[direction.pos_i] // 2
+            )
             if direction.is_horizontal:
                 self.rect.center = utils.random_position(x=fixed_coord)
             else:
