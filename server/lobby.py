@@ -37,9 +37,9 @@ class LobbyManager:
     def __init__(self) -> None:
         self.lobbies = dict()
 
-    def create_lobby(self, name: str) -> Lobby:
+    def create_lobby(self) -> Lobby:
         """Create a new lobby"""
-        lobby = Lobby(name)
+        lobby = Lobby()
         self.lobbies[lobby.id] = lobby
         return lobby
 
@@ -47,7 +47,7 @@ class LobbyManager:
         """Delete a lobby"""
         del self.lobbies[lobby.id]
 
-    def add_player_to_lobby(self, player: Player, lobby_id: Lobby):
+    def add_player_to_lobby(self, player: Player, lobby_id: bytes):
         """Add a player to a lobby"""
         self.lobbies[lobby_id].add_player(player)
 
