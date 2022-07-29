@@ -87,7 +87,7 @@ class Direction(IntEnum):
         return side >= rect[self.value]
 
     def move(self, x: int, y: int, step: int = OBJECT_STEP) -> tuple[int, int]:
-        """Returns the future location if the sprite moves"""
+        """Moves given position according to direction"""
         shift = self.sign * step
         if self.is_horizontal:
             x += shift

@@ -55,7 +55,7 @@ class Collectible(Collidable, ABC):
     item = None
 
     def __new__(cls: type["Self"], *args, **kwargs) -> "Self":
-        """TODO: #this is a public method?? fixme"""
+        """Validation allocator"""
         assert cls.item is not None
         return super().__new__(cls, *args, **kwargs)
 

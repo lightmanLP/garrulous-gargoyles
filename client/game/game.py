@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, ClassVar, NoReturn
+from typing import TYPE_CHECKING, ClassVar, NoReturn, Collection
 
 import pygame
 
@@ -15,9 +15,9 @@ logger = log.getLogger("game")
 
 
 class ScreenGroup(Group):
-    """Group of sprites on the screen"""
+    """Group of sprites representing the screen"""
 
-    def move(self, direction: struct.Direction, exclude=None) -> "Self":
+    def move(self, direction: struct.Direction, exclude: Collection = ()) -> "Self":
         """Move the member sprites"""
         game = Game.get()
 
@@ -29,11 +29,12 @@ class ScreenGroup(Group):
         )
         prediction.rect = p_rect
         prediction.mask = game.player.mask.copy()
-        exclude = [] if exclude is None else exclude
+        exclude = list(exclude)
 
         for sprite in self.sprites():
             if (
                 sprite is game.player
+                or sprite in exclude
                 or not isinstance(sprite, Collidable)
                 or not pygame.sprite.collide_mask(sprite, prediction)
             ):
@@ -57,7 +58,7 @@ class Game:
     sprites: ScreenGroup
 
     def __new__(cls: type["Self"], *args, **kwargs) -> "Self":
-        """TODO: fixme"""
+        """Singleton allocator"""
         assert cls._instance is None
         cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
