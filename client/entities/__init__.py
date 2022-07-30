@@ -82,11 +82,17 @@ class Object(Entity, Movable):
 
     def random_spawn(self) -> "Self":
         """Spawn the object at a random position"""
-        return self.spawn(utils.random_position())
+        player = Player.get()
+        self.spawn(utils.random_position())
+        while pygame.sprite.collide_mask(self, player):
+            self.spawn(utils.random_position())
+        return self
 
 
 class Player(Movable, Attackable, Entity):
     """Player object"""
+
+    _instance: ClassVar["type[Self] | None"] = None
 
     speed: int
     sprite_size: tuple[int, int]
@@ -94,6 +100,12 @@ class Player(Movable, Attackable, Entity):
     move_state: int
     health: int
     inventory: dict
+
+    def __new__(cls: type["Self"], *args, **kwargs) -> "Self":
+        """Singleton allocator"""
+        assert cls._instance is None
+        cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
 
     def __init__(
         self,
@@ -112,6 +124,13 @@ class Player(Movable, Attackable, Entity):
         self._generate_mask()
 
         self.inventory = {}
+
+    @classmethod
+    def get(cls) -> "Self":
+        """Get the game instance"""
+        if cls._instance is None:
+            return cls()
+        return cls._instance
 
     def _get_sprite(self, position: tuple[int, int]) -> pygame.Surface:
         return pygame.transform.scale(

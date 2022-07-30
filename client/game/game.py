@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, ClassVar, NoReturn, Collection
+from typing import TYPE_CHECKING, ClassVar, Collection, NoReturn
 
 import pygame
 
@@ -72,9 +72,9 @@ class Game:
         self.clock = pygame.time.Clock()
         self.sprites = ScreenGroup()
 
-        self._generate_background()
         self.player = Player().spawn(struct.CENTER)
         self.sprites.add(self.player)
+        self._generate_background()
 
     @classmethod
     def get(cls) -> "Self":
