@@ -5,6 +5,7 @@ from .action import Action
 
 # to be sent with send_binary()
 
+
 def pack(thing) -> list[int]:
     if isinstance(thing, Player):
         data = b"P" + thing.id + thing.location.tobytes()
