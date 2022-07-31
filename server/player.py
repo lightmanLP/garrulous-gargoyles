@@ -1,3 +1,4 @@
+import numpy as np
 from typing import TYPE_CHECKING
 import uuid
 
@@ -11,6 +12,7 @@ class Player:
     name: str
     id: bytes
     _lobby: "Lobby | None" = None
+    location: np.ndarray = np.zeros((2,), dtype=np.float64)
 
     def __init__(self, name: str) -> None:
         self.name = name

@@ -15,6 +15,7 @@ license = "MIT"
 python = "3.10.*"
 websockets = "~10.3"
 pygame = "~2.1.2"
+numpy = "^1.23.1"
 
 [tool.poetry.dev-dependencies]
 # Base tools
